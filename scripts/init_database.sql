@@ -1,6 +1,11 @@
--- ===============================
+/*
+===============================
 --  Create initial database
 -- =============================== 
+
+Warning: Running this will drop 'DataWarehouse' database.
+If there's already database named, DataWarehouse will be deleted.
+*/
 USE master;
 GO
 
@@ -11,7 +16,11 @@ BEGIN
 END;
 GO
 
+-- Create the Database 'DataWarehouse'
+CREATE DATABASE DataWarehouse;
+GO
 
+-- Create Schema for Warehouse (Medallion Architecture)
 CREATE SCHEMA bronze;
 GO
 
