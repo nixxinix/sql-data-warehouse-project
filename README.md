@@ -1,165 +1,146 @@
-# Data Warehouse and Analytics Project
+<div align="center">
 
-A hands-on data engineering project focused on building a modern data warehouse using **Microsoft SQL Server**. The project integrates CRM and ERP source data using the Medallion Architecture to transform raw data into clean, structured, and analysis-ready datasets.
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1F6FEB,100:0D1117&height=170&section=header&text=SQL%20Data%20Warehouse&fontSize=38&fontColor=FFFFFF&fontAlignY=36&desc=CRM%20%2B%20ERP%20data%20%E2%86%92%20Bronze%20%E2%86%92%20Silver%20%E2%86%92%20Gold&descSize=15&descAlignY=58" width="100%" alt="SQL Data Warehouse" />
 
-**The main goal of this project is to gain real, hands-on experience in data engineering** by applying SQL skills to data ingestion, transformation, data modeling, and data quality validation. This project follows the educational tutorial by Baraa Khatib Salkini from Data With Baraa as a learning reference.
+![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)
+![T-SQL](https://img.shields.io/badge/T--SQL-0D1117?style=flat-square)
+![Medallion](https://img.shields.io/badge/Architecture-Medallion-D29922?style=flat-square)
+![Status](https://img.shields.io/badge/status-in%20progress-1F6FEB?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)
 
-## Project Overview
+**A modern data warehouse built in Microsoft SQL Server that turns raw CRM and ERP files into analysis-ready data.**
 
-This project aims to build a centralized data warehouse that consolidates sales-related data from multiple source systems, improves data quality, and prepares datasets for analytical reporting.
+[Overview](#overview) · [Architecture](#architecture) · [Project Structure](#project-structure) · [Getting Started](#getting-started) · [Documentation](#documentation) · [Acknowledgment](#acknowledgment)
 
-Through practical implementation, I aim to strengthen my understanding of data engineering workflows and learn how data moves from raw source files to business-ready datasets.
+</div>
 
-### Objectives
+---
 
-- Gain hands-on experience in data warehouse development.
+## Overview
+
+This project builds a centralized data warehouse that consolidates sales-related data from two source systems (CRM and ERP), improves its quality, and prepares it for analytical reporting. Data moves through the three layers of the **Medallion Architecture**, each implemented in SQL.
+
+## Purpose
+
+The goal is real, hands-on data engineering experience: applying SQL to data ingestion, transformation, data modeling, and data quality validation, and understanding how data moves from raw source files to business-ready datasets.
+
+**Objectives**
+
 - Load CRM and ERP data from CSV files.
-- Implement the Bronze, Silver, and Gold layers using Medallion Architecture.
-- Clean, standardize, and transform data using SQL.
-- Integrate data from multiple source systems.
-- Design a data model for analytical queries and reporting.
+- Implement the Bronze, Silver, and Gold layers.
+- Clean, standardize, and integrate data from multiple source systems.
+- Design a fact and dimension model for analytical queries.
 - Validate data quality in the Silver and Gold layers.
-- Analyze customer behavior, product performance, and sales trends using SQL.
+- Analyze customer behavior, product performance, and sales trends with SQL.
 
-## Data Architecture
+## Architecture
 
-The project follows the **Medallion Architecture**, which organizes data into three layers.
+```mermaid
+flowchart LR
+    S1[CRM CSV files] --> B
+    S2[ERP CSV files] --> B
+    B[Bronze<br/>raw, as-is] --> SV[Silver<br/>cleaned and standardized]
+    SV --> G[Gold<br/>facts and dimensions]
+    G --> A[Analytics and reporting]
+
+    style S1 fill:#0D1117,stroke:#30363D,color:#C9D1D9
+    style S2 fill:#0D1117,stroke:#30363D,color:#C9D1D9
+    style B fill:#0D1117,stroke:#CD7F32,color:#C9D1D9
+    style SV fill:#0D1117,stroke:#8B949E,color:#C9D1D9
+    style G fill:#0D1117,stroke:#D29922,color:#C9D1D9
+    style A fill:#0D1117,stroke:#1F6FEB,color:#C9D1D9
+```
+
+| Layer | Role |
+|---|---|
+| **Bronze** | Stores raw data from the CRM and ERP files, preserved as closely as possible to the source. Loaded with `BULK INSERT` by the `bronze.load_bronze` stored procedure. |
+| **Silver** | Cleans, standardizes, and transforms Bronze data so the two sources can be integrated. |
+| **Gold** | Business-ready tables organized as facts and dimensions for analytical queries and reporting. |
 
 ![Data Architecture](docs/data_architecture.png)
 
-### Bronze Layer
+## Tech Stack
 
-Stores raw data ingested from the CRM and ERP source files, preserving the original data as closely as possible.
-
-### Silver Layer
-
-Cleans, standardizes, and transforms data from the Bronze layer to improve consistency and prepare datasets for integration.
-
-### Gold Layer
-
-Organizes processed data into business-ready tables, using fact and dimension modeling to support analytical queries and reporting.
+| Tool | Used for |
+|---|---|
+| Microsoft SQL Server | Database and data warehouse |
+| T-SQL | Ingestion, cleansing, transformation, stored procedures, and quality checks |
+| CSV | Source data format |
+| Draw.io | Architecture and data model diagrams |
+| Git and GitHub | Version control and documentation |
 
 ## Project Structure
 
 ```text
-data-warehouse-project/
-├── datasets/
-│
-├── docs/
-│   ├── data_architecture.png
-│   ├── data_catalog.md
-│   ├── data_flow_diagram.png
-│   ├── data_integration_diagram.png
-│   ├── data_model.png
-│   └── naming_convention.md
-│
+sql-data-warehouse-project/
+├── datasets/                  # Source CSV files from the CRM and ERP systems
+├── docs/                      # Diagrams, data catalog, and naming conventions
 ├── scripts/
+│   ├── init_database.sql      # Creates the database and the bronze/silver/gold schemas
 │   ├── bronze/
-│   │   ├── ddl_bronze.sql
+│   │   ├── ddl_bronze.sql     # Bronze table definitions
 │   │   └── proc_load_bronze.sql
 │   ├── silver/
-│   ├── gold/
-│   │   └── ddl_gold.sql
-│   └── init_database.sql
-│
+│   │   ├── dd_silver.sql      # Silver table definitions
+│   │   └── proc_load_silver.sql
+│   └── gold/
+│       └── ddl_gold.sql       # Gold layer objects (facts and dimensions)
 ├── tests/
-│   ├── quality_check_gold.sql
-│   └── quality_check_silver.sql
-│
-├── LICENSE
-└── README.md
+│   ├── quality_check_silver.sql
+│   └── quality_check_gold.sql
+└── LICENSE
 ```
 
-## Directory Description
+## Getting Started
 
-| Directory/File | Description |
-|---|---|
-| `datasets/` | Stores the source CSV files from the CRM and ERP systems. |
-| `docs/` | Contains project diagrams, data documentation, and naming conventions. |
-| `scripts/bronze/` | Contains scripts for creating Bronze tables and loading raw data. |
-| `ddl_bronze.sql` | Defines the Bronze layer tables. |
-| `proc_load_bronze.sql` | Contains the stored procedure or procedures for loading source data into Bronze. |
-| `scripts/silver/` | Contains scripts for cleansing, standardization, and transformation. |
-| `scripts/gold/` | Contains scripts for creating Gold layer tables. |
-| `ddl_gold.sql` | Defines the Gold layer tables. |
-| `init_database.sql` | Initializes the database and required schemas. |
-| `tests/` | Contains SQL scripts for checking Silver and Gold data quality. |
-| `LICENSE` | Contains the project's licensing terms. |
-| `README.md` | Documents the project, architecture, workflow, and implementation. |
+**Prerequisites:** Microsoft SQL Server and a SQL client such as SQL Server Management Studio.
 
-## Technologies Used
+Run the scripts in layer order:
 
-- **Microsoft SQL Server** – Database and data warehouse development.
-- **SQL** – Data ingestion, cleansing, transformation, and validation.
-- **CSV** – Source data format.
-- **Git and GitHub** – Version control and project documentation.
-- **Draw.io** – Data architecture and modeling diagrams.
-
-## Data Engineering Workflow
-
-1. **Database Initialization** – Create the database and required schemas.
-2. **Bronze Layer** – Define raw data tables and load CRM and ERP source files.
-3. **Silver Layer** – Clean, standardize, and transform the ingested data.
-4. **Gold Layer** – Build business-ready tables for analytics.
-5. **Data Quality Testing** – Validate the Silver and Gold datasets using SQL.
-6. **Analytics and Reporting** – Analyze customer behavior, product performance, and sales trends.
+1. `scripts/init_database.sql` to create the database and schemas.
+2. `scripts/bronze/ddl_bronze.sql`, then load raw data:
+   ```sql
+   EXEC bronze.load_bronze;
+   ```
+3. `scripts/silver/dd_silver.sql` and `scripts/silver/proc_load_silver.sql` to build and load the Silver layer.
+4. `scripts/gold/ddl_gold.sql` to build the Gold layer.
+5. `tests/quality_check_silver.sql` and `tests/quality_check_gold.sql` to validate the results.
 
 ## Documentation
 
-The `docs/` directory contains diagrams and documentation describing the data warehouse design.
-
-### Data Flow Diagram
-
-Illustrates how data moves through the data warehouse pipeline.
-
-![Data Flow Diagram](docs/data_flow_diagram.png)
-
-### Data Integration Diagram
-
-Shows how data from the CRM and ERP source systems is integrated.
-
-![Data Integration Diagram](docs/data_integration_diagram.png)
-
-### Data Model
-
-Illustrates the structure and relationships between tables used in the analytical data model.
-
-![Data Model](docs/data_model.png)
-
-### Additional Documentation
-
-- **[Data Catalog](docs/data_catalog.md)** – Describes datasets and their attributes.
-- **[Naming Convention](docs/naming_convention.md)** – Defines naming rules used throughout the project.
-
-## Learning Resources and Acknowledgment
-
-Special thanks to **Baraa Khatib Salkini from [Data With Baraa](https://www.datawithbaraa.com/)** for creating an educational, beginner-friendly tutorial that guides learners through building a SQL Server data warehouse.
-
-His step-by-step explanations serve as a valuable learning reference as I gain hands-on experience with data ingestion, the Medallion Architecture, data transformation, and data modeling.
-
-This project follows his tutorial, with the repository organized according to my own directory structure as I work through the implementation and develop my data engineering skills.
-
-**Original resources:**
-
-- **YouTube Channel:** [Data With Baraa](https://www.youtube.com/@datawithbaraa)
-- **Original Repository:** [SQL Data Warehouse Project](https://github.com/DataWithBaraa/sql-data-warehouse-project)
-- **Tutorial Video:** [Building a Modern Data Warehouse](https://youtu.be/9GVqKuTVANE)
-- **Website:** [datawithbaraa.com](https://www.datawithbaraa.com/)
-
-Please refer to the original repository for its license and attribution requirements.
+| Document | What it shows |
+|---|---|
+| [Data Flow Diagram](docs/data_flow_diagram.png) | How data moves through the pipeline |
+| [Data Integration Diagram](docs/data_integration_diagram.png) | How CRM and ERP data are joined |
+| [Data Model](docs/data_model.png) | Tables and relationships in the analytical model |
+| [Data Catalog](docs/data_catalog.md) | Datasets and their attributes |
+| [Naming Convention](docs/naming_convention.md) | Naming rules used throughout the project |
 
 ## Project Status
 
-This project is part of my ongoing data engineering learning journey. Its implementation progresses through the following stages:
+In progress, as part of an ongoing data engineering learning journey:
 
 - Database initialization
-- Bronze layer table creation and data loading
-- Silver layer data cleansing and transformation
-- Gold layer development and analytical data modeling
+- Bronze layer tables and data loading
+- Silver layer cleansing and transformation
+- Gold layer and analytical data model
 - Data quality validation
 - SQL-based analytics
 
+## Acknowledgment
+
+This project follows the educational tutorial by **Baraa Khatib Salkini** from [Data With Baraa](https://www.datawithbaraa.com/), with the repository organized in my own structure as I work through the implementation.
+
+- Original repository: [DataWithBaraa/sql-data-warehouse-project](https://github.com/DataWithBaraa/sql-data-warehouse-project)
+- Tutorial video: [Building a Modern Data Warehouse](https://youtu.be/9GVqKuTVANE)
+- YouTube channel: [Data With Baraa](https://www.youtube.com/@datawithbaraa)
+
 ## License
 
-Please refer to the included `LICENSE` file and the [original repository](https://github.com/DataWithBaraa/sql-data-warehouse-project) for applicable licensing and attribution requirements.
+Released under the [MIT License](LICENSE). Please also see the [original repository](https://github.com/DataWithBaraa/sql-data-warehouse-project) for its own license and attribution requirements.
 
+---
+
+<div align="center">
+<sub>Part of the <a href="https://github.com/nixxinix">nixxinix</a> project portfolio</sub>
+</div>
